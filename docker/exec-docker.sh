@@ -18,15 +18,20 @@ _EOS_
     exit 1
 }
 
+while (( $# > 0 )); do
+    if [[ $1 == "--help" ]] || [[ $1 == "-h" ]]; then
+        usage_exit
+    else
+        echo "無効なパラメータ: $1"
+        usage_exit
+    fi
+done
+
 CONTAINERS="$(docker ps | grep ${DOCKER_IMAGE})"
 
 if [[ "${CONTAINERS}" == "" ]]; then
     echo 'コンテナが起動していません．'
     usage_exit
-elif [[ $(echo "${CONTAINERS}" | wc -l) -eq 1 ]]; then
-    echo '起動中のコンテナを１つ検出しました．'
-else
-    echo '起動中のコンテナを２つ以上検出しました．'
 fi
 
 declare -a containers_list=()
