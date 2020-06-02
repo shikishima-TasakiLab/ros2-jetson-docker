@@ -1,0 +1,72 @@
+ARG L4T_VERSION="r32.3.1"
+FROM jetson/ros2:${L4T_VERSION}-dashing
+
+LABEL maintainer="Shikishima-TasakiLab"
+
+ARG ROS_DISTRO="dashing"
+ARG HOST_USER="1000"
+ARG USER_NAME="ros2"
+
+SHELL ["/bin/bash", "-c"]
+
+RUN apt-get update && \
+    apt-get install -y \
+        pkg-config \
+        python3-pip \
+        python3-dev \
+        gfortran \
+        libopenblas-dev \
+        libhdf5-serial-dev \
+        hdf5-tools \
+        libhdf5-dev \
+        zlib1g-dev \
+        zip \
+        libpng-dev \
+        libfreetype6-dev \
+        libjpeg8-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV LANG=C.UTF-8
+RUN pip3 install \
+        setuptools \
+        Cython \
+        wheel --verbose
+RUN pip3 install \
+        numpy --verbose
+RUN HDF5_DIR=/usr/lib/aarch64-linux-gnu/hdf5/serial/ \
+    pip3 install \
+        h5py==2.9.0 --verbose
+RUN pip3 install \
+        future==0.17.1 \
+        mock==3.0.5 \
+        keras_preprocessing==1.0.5 \
+        keras_applications==1.0.8 \
+        gast==0.2.2 \
+        futures \
+        protobuf \
+        pybind11 --verbose
+RUN pip3 install \
+        six \
+        cycler \
+        kiwisolver \
+        pyparsing \
+        python-dateutil \
+        scikit-image==0.16.2 --verbose
+RUN pip3 install --no-dependencies \
+        matplotlib --verbose
+RUN pip3 install \
+        pyyaml --verbose
+
+WORKDIR /tmp/tensorflow
+ARG TENSORFLOW_WHL="tensorflow_gpu-2.0.0+nv19.11-cp36-cp36m-linux_aarch64.whl"
+RUN wget https://developer.download.nvidia.com/compute/redist/jp/v42/tensorflow-gpu/${TENSORFLOW_WHL} && \
+    pip3 install ${TENSORFLOW_WHL} --verbose && \
+    rm ${TENSORFLOW_WHL}
+ENV PATH="/usr/local/cuda/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:${LD_LIBRARY_PATH}"
+RUN pip3 install pycuda --verbose
+
+WORKDIR /root
+COPY ./entrypoint.sh /tmp/entrypoint.sh
+ENTRYPOINT [ "/tmp/entrypoint.sh" ]

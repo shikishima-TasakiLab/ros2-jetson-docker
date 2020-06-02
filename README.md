@@ -16,6 +16,11 @@ git clone https://github.com/shikishima-TasakiLab/ros2-jetson-docker.git ROS2-Je
 #!/bin/bash
 ./ROS2-Jetson/docker/build-docker.sh
 ```
+|オプション|パラメータ|説明|既定値|例|
+|-|-|-|-|-|
+|`-h`, `--help`|なし|ヘルプを表示|なし|`-h`|
+|`--tensorflow`|VERSION|TensorFlowのバージョンを指定<br>(1.13 , 1.14 , 1.15 , 2.0)|off|`--tensorflow 2.0`|
+
 JetPackのバージョンにより，ベースイメージが自動選択される．
 
 ### Dockerコンテナの起動
