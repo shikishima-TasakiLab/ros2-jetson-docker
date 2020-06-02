@@ -59,6 +59,7 @@ RUN apt-get update && \
         python-requests \
         python3-pip \
         python3-setuptools \
+        python3-opencv \
         tmux \
         v4l-utils \
         nano \
